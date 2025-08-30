@@ -271,7 +271,7 @@ class HAIKUAgent {
 }
 
 // Configuration (set your webhook URL here)
-window.WEBHOOK_URL = 'https://haiku-agent-production.up.railway.app/webhook/haiku-chat';
+window.WEBHOOK_URL = 'https://n8n-production-de44.up.railway.app/webhook/haiku-chat';
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
