@@ -1,0 +1,161 @@
+{
+  "name": "HAIKU Agent MVP",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "haiku-chat",
+        "responseMode": "responseNode",
+        "options": {
+          "cors": {
+            "allowedOrigins": "*"
+          }
+        }
+      },
+      "id": "webhook-trigger",
+      "name": "Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "webhookId": "haiku-chat-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract message and metadata\nconst message = $input.all()[0].json.message || '';\nconst userId = $input.all()[0].json.userId || 'anonymous';\nconst personality = $input.all()[0].json.personality || 'BigSis';\nconst sessionId = $input.all()[0].json.sessionId || new Date().getTime();\n\n// Get conversation history from memory (if exists)\nconst memory = $input.all()[0].json.memory || [];\n\n// Personality prompts\nconst personalities = {\n  'BigSis': 'You are BigSis, an analytical and trustworthy AI assistant. You provide thorough, well-researched responses with a focus on accuracy and reliability. Your tone is professional yet warm.',\n  'Bro': 'You are Bro, an action-oriented AI that gets things done. You provide direct, practical solutions with high energy. Your responses are concise and focused on immediate action.',\n  'LilSis': 'You are LilSis, a creative and playful AI assistant. You think outside the box and bring fresh perspectives. Your tone is friendly, enthusiastic, and imaginative.',\n  'CBO': 'You are CBO (Chief Business Officer), a strategic growth advisor. You focus on optimization, scaling, and long-term value. Your responses are data-driven and growth-oriented.'\n};\n\n// Build conversation context\nconst conversationHistory = memory.slice(-10).map(m => ({\n  role: m.role,\n  content: m.content\n}));\n\n// Add new user message\nconversationHistory.push({\n  role: 'user',\n  content: message\n});\n\nreturn {\n  json: {\n    message: message,\n    userId: userId,\n    sessionId: sessionId,\n    personality: personality,\n    systemPrompt: personalities[personality] || personalities['BigSis'],\n    conversationHistory: conversationHistory,\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "prepare-context",
+      "name": "Prepare Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "HTTP-Referer",
+              "value": "https://haiku-agent.app"
+            },
+            {
+              "name": "X-Title",
+              "value": "HAIKU Agent"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-4o-mini\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.systemPrompt }}\\n\\nImportant: Keep responses concise and helpful. Follow the HAIKU principle of constraint - say more with less.\"\n    },\n    ...{{ $json.conversationHistory }}\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 500,\n  \"top_p\": 0.9,\n  \"frequency_penalty\": 0.2,\n  \"presence_penalty\": 0.1,\n  \"stream\": false\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "openrouter-call",
+      "name": "OpenRouter API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "{{OPENROUTER_CREDENTIAL_ID}}",
+          "name": "OpenRouter API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract response from OpenRouter\nconst response = $input.all()[0].json;\nconst context = $input.all()[0].json;\n\nif (!response.choices || !response.choices[0]) {\n  return {\n    json: {\n      error: true,\n      message: 'No response from AI model',\n      timestamp: new Date().toISOString()\n    }\n  };\n}\n\nconst aiResponse = response.choices[0].message.content;\nconst model = response.model || 'unknown';\nconst usage = response.usage || {};\n\n// Calculate cost (approximate)\nconst tokens = (usage.prompt_tokens || 0) + (usage.completion_tokens || 0);\nconst costPerMillion = 0.15; // GPT-4o-mini rate\nconst cost = (tokens / 1000000) * costPerMillion;\n\n// Update memory with new exchange\nconst updatedMemory = context.conversationHistory || [];\nupdatedMemory.push({\n  role: 'assistant',\n  content: aiResponse,\n  timestamp: new Date().toISOString(),\n  model: model,\n  tokens: tokens\n});\n\n// Keep only last 20 messages in memory\nconst trimmedMemory = updatedMemory.slice(-20);\n\nreturn {\n  json: {\n    success: true,\n    message: aiResponse,\n    metadata: {\n      model: model,\n      personality: context.personality,\n      tokens: tokens,\n      cost: cost.toFixed(4),\n      timestamp: new Date().toISOString()\n    },\n    memory: trimmedMemory,\n    sessionId: context.sessionId\n  }\n};"
+      },
+      "id": "format-response",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Context": {
+      "main": [
+        [
+          {
+            "node": "OpenRouter API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter API": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 60
+  },
+  "versionId": "haiku-mvp-v1",
+  "meta": {
+    "templateId": "haiku-agent-mvp",
+    "description": "HAIKU Agent MVP - Simple chat interface with personality selection and memory",
+    "documentation": "https://github.com/YOUR_USERNAME/haiku-agent/docs/SETUP.md"
+  },
+  "id": "haiku_agent_001",
+  "tags": [
+    {
+      "id": "haiku",
+      "name": "HAIKU"
+    },
+    {
+      "id": "mvp",
+      "name": "MVP"
+    }
+  ]
+}

@@ -1,0 +1,391 @@
+/* HAIKU Design System - BDS Colors & 4-3-2-1 Framework */
+:root {
+    /* BDS Agent Colors */
+    --bigsis: #00A1F1;
+    --bro: #FE5F00;
+    --lilsis: #7E3AF2;
+    --cbo: #3EB85F;
+    --neutral: #393939;
+    --error: #EF4444;
+    
+    /* 60-30-10 Distribution */
+    --primary-bg: #ffffff;
+    --secondary-bg: #f7f8fa;
+    --accent: var(--bigsis);
+    
+    /* Typography */
+    --font-display: 'DM Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    
+    /* Spacing (8px base unit) */
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 40px;
+    --space-6: 48px;
+    
+    /* Type Scale */
+    --text-xs: 14px;
+    --text-sm: 16px;
+    --text-md: 24px;
+    --text-lg: 32px;
+    --text-xl: 48px;
+    
+    /* Transitions */
+    --transition: all 0.2s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--secondary-bg);
+    color: var(--neutral);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Container - Full height layout */
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--primary-bg);
+}
+
+/* Header */
+.header {
+    padding: var(--space-2);
+    border-bottom: 1px solid #e5e7eb;
+    background: var(--primary-bg);
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--neutral);
+    margin-bottom: var(--space-2);
+}
+
+/* Personality Selector - 4 options (HAIKU: 4 pillars) */
+.personality-selector {
+    display: flex;
+    gap: var(--space-1);
+}
+
+.personality-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    border: 2px solid transparent;
+    border-radius: var(--space-1);
+    background: var(--secondary-bg);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--neutral);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.personality-btn:hover {
+    transform: translateY(-2px);
+}
+
+.personality-btn.active {
+    background: var(--primary-bg);
+    color: var(--primary-bg);
+}
+
+.personality-btn[data-personality="BigSis"].active {
+    border-color: var(--bigsis);
+    color: var(--bigsis);
+    background: rgba(0, 161, 241, 0.1);
+}
+
+.personality-btn[data-personality="Bro"].active {
+    border-color: var(--bro);
+    color: var(--bro);
+    background: rgba(254, 95, 0, 0.1);
+}
+
+.personality-btn[data-personality="LilSis"].active {
+    border-color: var(--lilsis);
+    color: var(--lilsis);
+    background: rgba(126, 58, 242, 0.1);
+}
+
+.personality-btn[data-personality="CBO"].active {
+    border-color: var(--cbo);
+    color: var(--cbo);
+    background: rgba(62, 184, 95, 0.1);
+}
+
+.personality-icon {
+    font-size: 20px;
+}
+
+/* Chat Container - 60% (HAIKU: 60-30-10 rule) */
+.chat-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-3);
+    background: var(--primary-bg);
+}
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.message {
+    display: flex;
+    gap: var(--space-2);
+    animation: fadeIn 0.3s ease;
+}
+
+.message.user {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: var(--space-5);
+    height: var(--space-5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-xs);
+    color: white;
+    flex-shrink: 0;
+}
+
+.message.user .message-avatar {
+    background: var(--neutral);
+}
+
+.message-content {
+    flex: 1;
+    max-width: 70%;
+}
+
+.message-content p {
+    background: var(--secondary-bg);
+    padding: var(--space-2);
+    border-radius: var(--space-2);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+}
+
+.message.user .message-content p {
+    background: var(--accent);
+    color: white;
+}
+
+.message-time {
+    display: block;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: var(--space-1);
+}
+
+/* Status Bar - 30% (HAIKU: 60-30-10 rule) */
+.status-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: var(--space-2);
+    background: var(--secondary-bg);
+    border-top: 1px solid #e5e7eb;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-label {
+    font-size: 12px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-value {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--neutral);
+}
+
+.status-indicator {
+    position: relative;
+    padding-left: var(--space-2);
+}
+
+.status-indicator::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cbo);
+    animation: pulse 2s infinite;
+}
+
+/* Input Container - 10% (HAIKU: 60-30-10 rule) */
+.input-container {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    background: var(--primary-bg);
+    border-top: 1px solid #e5e7eb;
+}
+
+.message-input {
+    flex: 1;
+    padding: var(--space-2);
+    border: 2px solid #e5e7eb;
+    border-radius: var(--space-1);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: var(--transition);
+}
+
+.message-input:focus {
+    border-color: var(--accent);
+}
+
+.send-btn {
+    padding: var(--space-2);
+    background: var(--bro);
+    color: white;
+    border: none;
+    border-radius: var(--space-1);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--space-6);
+}
+
+.send-btn:hover {
+    background: #e54e00;
+    transform: translateY(-2px);
+}
+
+.send-btn:active {
+    transform: translateY(0);
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    gap: var(--space-1);
+}
+
+.loading-indicator.active {
+    display: flex;
+}
+
+.loading-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Mobile Responsive (HAIKU: Constraint principle) */
+@media (max-width: 768px) {
+    .personality-selector {
+        flex-wrap: wrap;
+    }
+    
+    .personality-btn {
+        min-width: calc(50% - var(--space-1));
+    }
+    
+    .personality-name {
+        display: none;
+    }
+    
+    .message-content {
+        max-width: 85%;
+    }
+    
+    .status-bar {
+        padding: var(--space-1);
+    }
+    
+    .status-label {
+        font-size: 10px;
+    }
+    
+    .status-value {
+        font-size: var(--text-xs);
+    }
+}

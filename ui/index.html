@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAIKU Agent - Context-Aware Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">Context Assistant</h1>
+            <div class="personality-selector">
+                <button class="personality-btn active" data-personality="BigSis" data-color="#00A1F1">
+                    <span class="personality-icon">🔍</span>
+                    <span class="personality-name">BigSis</span>
+                </button>
+                <button class="personality-btn" data-personality="Bro" data-color="#FE5F00">
+                    <span class="personality-icon">⚡</span>
+                    <span class="personality-name">Bro</span>
+                </button>
+                <button class="personality-btn" data-personality="LilSis" data-color="#7E3AF2">
+                    <span class="personality-icon">✨</span>
+                    <span class="personality-name">LilSis</span>
+                </button>
+                <button class="personality-btn" data-personality="CBO" data-color="#3EB85F">
+                    <span class="personality-icon">📈</span>
+                    <span class="personality-name">CBO</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat Interface (60%) -->
+        <main class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-avatar" style="background-color: #00A1F1;">AI</div>
+                    <div class="message-content">
+                        <p>Hello! I'm your Context Assistant. How can I help you today?</p>
+                        <span class="message-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Bar (30%) -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">Model</span>
+                <span class="status-value" id="modelStatus">GPT-4o-mini</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Memory</span>
+                <span class="status-value" id="memoryStatus">0/20</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Cost</span>
+                <span class="status-value" id="costStatus">$0.00</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Status</span>
+                <span class="status-value status-indicator" id="connectionStatus">Ready</span>
+            </div>
+        </div>
+
+        <!-- Input Area (10%) -->
+        <div class="input-container">
+            <input 
+                type="text" 
+                class="message-input" 
+                id="messageInput" 
+                placeholder="Type your message..."
+                autocomplete="off"
+            >
+            <button class="send-btn" id="sendBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading-indicator" id="loadingIndicator">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
